@@ -279,27 +279,27 @@ func (m *Masker) Name(i string) string {
 	}
 
 	if l == 2 || l == 3 {
-		return m.overlay(i, strLoop(instance.mask, len("**")), 1, 2)
+		return m.overlay(i, strLoop(m.mask, len("**")), 1, 2)
 	}
 
 	if l > 3 {
-		return m.overlay(i, strLoop(instance.mask, len("**")), 1, 3)
+		return m.overlay(i, strLoop(m.mask, len("**")), 1, 3)
 	}
 
-	return strLoop(instance.mask, len("**"))
+	return strLoop(m.mask, len("**"))
 }
 
-// ID mask last 4 digits of ID number
+// ID mask last 8 digits of ID number
 //
 // Example:
-//   input: A123456789
-//   output: A12345****
+//   input: 110101198012310071
+//   output: 110101********0071
 func (m *Masker) ID(i string) string {
 	l := len([]rune(i))
 	if l == 0 {
 		return ""
 	}
-	return m.overlay(i, strLoop(instance.mask, len("****")), 6, 10)
+	return m.overlay(i, strLoop(m.mask, len("********")), 6, 14)
 }
 
 // Address keep first 6 letters, mask the rest
@@ -313,9 +313,9 @@ func (m *Masker) Address(i string) string {
 		return ""
 	}
 	if l <= 6 {
-		return strLoop(instance.mask, len("******"))
+		return strLoop(m.mask, len("******"))
 	}
-	return m.overlay(i, strLoop(instance.mask, len("******")), 6, math.MaxInt64)
+	return m.overlay(i, strLoop(m.mask, len("******")), 6, math.MaxInt64)
 }
 
 // CreditCard mask 6 digits from the 7'th digit
@@ -330,7 +330,7 @@ func (m *Masker) CreditCard(i string) string {
 	if l == 0 {
 		return ""
 	}
-	return m.overlay(i, strLoop(instance.mask, len("******")), 6, 12)
+	return m.overlay(i, strLoop(m.mask, len("******")), 6, 12)
 }
 
 // Email keep domain and the first 3 letters
@@ -350,27 +350,27 @@ func (m *Masker) Email(i string) string {
 	case 0:
 		return ""
 	case 1:
-		return m.overlay(i, strLoop(instance.mask, len("****")), 3, 7)
+		return m.overlay(i, strLoop(m.mask, len("****")), 3, 7)
 	}
 
 	addr := tmp[0]
 	domain := tmp[1]
 
-	addr = m.overlay(addr, strLoop(instance.mask, len("****")), 3, 7)
+	addr = m.overlay(addr, strLoop(m.mask, len("****")), 3, 7)
 
 	return addr + "@" + domain
 }
 
-// Mobile mask 3 digits from the 4'th digit
+// Mobile mask 4 digits from the 4'th digit
 //
 // Example:
-//   input: 0987654321
-//   output: 0987***321
+//   input: 13010010100
+//   output: 130****0100
 func (m *Masker) Mobile(i string) string {
 	if len(i) == 0 {
 		return ""
 	}
-	return m.overlay(i, strLoop(instance.mask, len("***")), 4, 7)
+	return m.overlay(i, strLoop(m.mask, len("****")), 3, 7)
 }
 
 // Telephone remove "(", ")", " ", "-" chart, and mask last 4 digits of telephone number, format to "(??)????-????"
@@ -417,13 +417,18 @@ func (m *Masker) Password(i string) string {
 	if l == 0 {
 		return ""
 	}
-	return strLoop(instance.mask, len("************"))
+	return strLoop(m.mask, len("************"))
 }
 
 // New create Masker
-func New() *Masker {
+func New(maskChar ...string) *Masker {
 	return &Masker{
-		mask: "*",
+		mask: func()string{
+			if len(maskChar) > 0 && len(maskChar[0]) > 0 {
+				return maskChar[0][:1]
+			}
+			return "*"
+		}(),
 	}
 }
 
