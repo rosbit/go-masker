@@ -289,7 +289,7 @@ func (m *Masker) Name(i string) string {
 	return strLoop(m.mask, len("**"))
 }
 
-// ID mask last 8 digits of ID number
+// ID mask 8 digits from 6'th digit of ID number
 //
 // Example:
 //   input: 110101198012310071

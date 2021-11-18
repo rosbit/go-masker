@@ -9,12 +9,13 @@
 
 Golang Masker is a simple utility of creating a mask for sensitive information.
 
+* Changes have been made according to the original version.
 * [Getting Started](#Getting-Started)
 
 # Getting Started
 
 ```
-$ go get -u github.com/ggwhite/go-masker
+$ go get -u github.com/rosbit/go-masker
 ```
 
 ## Demo
@@ -25,13 +26,13 @@ There are two ways to get a masker instance:
 package main
 
 import (
-	masker "github.com/ggwhite/go-masker"
+	masker "github.com/rosbit/go-masker"
 )
 
 func main() {
-	masker.Name("ggwhite")
-	masker.ID("A123456789")
-	masker.Mobile("0978978978")
+	masker.Name("rosbit")
+	masker.ID("110101198012310070")
+	masker.Mobile("13010010010")
 }
 ```
 
@@ -40,14 +41,14 @@ func main() {
 package main
 
 import (
-	masker "github.com/ggwhite/go-masker"
+	masker "github.com/rosbit/go-masker"
 )
 
 func main() {
-	m := masker.New()
-	m.Name("ggwhite")
-	m.ID("A123456789")
-	m.Mobile("0978978978")
+	m := masker.New() // or m := masker.New("*")
+	m.Name("rosbit")
+	m.ID("110101198012310070")
+	m.Mobile("13010010010")
 }
 ```
 
@@ -59,9 +60,9 @@ func main() {
 |Password    |MPassword    |password   |always return `************`                                                                           |
 |Address     |MAddress     |addr       |keep first 6 letters, mask the rest                                                                    |
 |Email       |MEmail       |email      |keep domain and the first 3 letters                                                                    |
-|Mobile      |MMobile      |mobile     |mask 3 digits from the 4'th digit                                                                      |
+|Mobile      |MMobile      |mobile     |mask 4 digits from the 4'th digit                                                                      |
 |Telephone   |MTelephone   |tel        |remove `(`, `)`, ` `, `-` chart, and mask last 4 digits of telephone number, format to `(??)????-????` |
-|ID          |MID          |id         |mask last 4 digits of ID number                                                                        |
+|ID          |MID          |id         |mask 8 digits from the 6'th digit of ID number                                                         |
 |CreditCard  |MCreditCard  |credit     |mask 6 digits from the 7'th digit                                                                      |
 |Struct      |MStruct      |struct     |mask the struct                                                                                        |
 
@@ -72,20 +73,20 @@ func main() {
 package main
 
 import (
-	masker "github.com/ggwhite/go-masker"
+	masker "github.com/rosbit/go-masker"
 )
 
 func main() {
-	masker.String(masker.MName, "ggwhite")
-	masker.String(masker.MID, "A123456789")
-	masker.String(masker.MMobile, "0987987987")
+	masker.String(masker.MName, "rosbit")
+	masker.String(masker.MID, "110101198012310070")
+	masker.String(masker.MMobile, "13010010010")
 }
 ```
 Result:
 ```
-g**hite
-A12345****
-0987***987
+r**bit
+110101********0070
+130****0010
 ```
 
 ## Custom Mask
@@ -93,21 +94,21 @@ A12345****
 package main
 
 import (
-	masker "github.com/ggwhite/go-masker"
+	masker "github.com/rosbit/go-masker"
 )
 
 func main() {
-	masker.String(masker.MName, "ggwhite")
-	masker.String(masker.MID, "A123456789")
+	masker.String(masker.MName, "rosbit")
+	masker.String(masker.MID, "110101198012310070")
 	masker.SetMask("-")
-	masker.String(masker.MMobile, "0987987987")
+	masker.String(masker.MMobile, "13010010010")
 }
 ```
 Result:
 ```
-g**hite
-A12345****
-0987---987
+r**bit
+110101********0070
+130----0010
 ```
 
 
@@ -122,7 +123,7 @@ package main
 
 import (
 	"log"
-	masker "github.com/ggwhite/go-masker"
+	masker "github.com/rosbit/go-masker"
 )
 
 type Foo struct {
@@ -132,8 +133,8 @@ type Foo struct {
 
 func main() {
 	foo := &Foo{
-		Name:   "ggwhite",
-		Mobile: "0987987987",
+		Name:   "rosbit",
+		Mobile: "13010010010",
 	}
 	t, err := masker.Struct(foo)
 	log.Println(t)
@@ -144,7 +145,7 @@ func main() {
 
 Result:
 ```
-t = &{g**hite 0987***987} 
+t = &{r**bit 130****0010} 
 err = <nil>
 ```
 
@@ -154,7 +155,7 @@ err = <nil>
 package main
 
 import (
-	masker "github.com/ggwhite/go-masker"
+	masker "github.com/rosbit/go-masker"
 )
 
 type Foo struct {
@@ -196,7 +197,7 @@ err = <nil>
 package main
 
 import (
-	masker "github.com/ggwhite/go-masker"
+	masker "github.com/rosbit/go-masker"
 )
 
 type Foo struct {
