@@ -4,7 +4,7 @@ import (
 	"log"
 	"net/http"
 
-	masker "github.com/ggwhite/go-masker"
+	masker "github.com/rosbit/go-masker"
 	"github.com/gin-gonic/gin"
 )
 
