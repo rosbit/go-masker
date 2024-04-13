@@ -22,6 +22,7 @@ const (
 	MTelephone  mtype = "tel"
 	MID         mtype = "id"
 	MCreditCard mtype = "credit"
+	MCustomer   mtype = "customer"
 	MStruct     mtype = "struct"
 )
 
@@ -254,6 +255,8 @@ func (m *Masker) String(t mtype, i string) string {
 		return m.Telephone(i)
 	case MCreditCard:
 		return m.CreditCard(i)
+	case MCustomer:
+		return m.Customer(i)
 	}
 }
 
@@ -420,6 +423,21 @@ func (m *Masker) Password(i string) string {
 	return strLoop(m.mask, len("************"))
 }
 
+func (m *Masker) Customer(i string) string {
+	if len(i) == 0 {
+		return ""
+	}
+
+	l := len([]rune(i))
+	if l == 1 {
+		return "*"
+	}
+	if l <= 5 {
+		return m.overlay(i, strLoop(m.mask, l-1), 1, l)
+	}
+	return m.overlay(i, strLoop(m.mask, l-4), 2, l-2)
+}
+
 // New create Masker
 func New(maskChar ...string) *Masker {
 	return &Masker{
@@ -451,6 +469,7 @@ func init() {
 //       Mobile    string `mask:"mobile"`
 //       Telephone string `mask:"tel"`
 //       Credit    string `mask:"credit"`
+//       Customer  string `mask:"customer"`
 //       Foo       *Foo   `mask:"struct"`
 //   }
 //
@@ -553,6 +572,10 @@ func Telephone(i string) string {
 // Password always return "************"
 func Password(i string) string {
 	return instance.Password(i)
+}
+
+func Customer(i string) string {
+	return instance.Customer(i)
 }
 
 func SetMask(mask string) {
